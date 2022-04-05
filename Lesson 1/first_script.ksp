@@ -1,0 +1,18 @@
+on init {callback triggered when Kontakt receives an on init message}
+	message("Hello World") {This is a comment}
+end on
+
+
+on note {callback triggered when Kontakt receives an on note message}
+	message("I am the on note callback")
+end on
+
+
+on release {callback triggered when Kontakt receives an on release message}
+	message("I am the on release callback")
+end on
+
+
+on controller {callback triggered when Kontakt receives an on controller message}
+	message("I am the on controller callback")
+end on
