@@ -1,0 +1,86 @@
+on init
+
+	{on init is the only place you can declare variables}
+	
+	{variable declaration}
+	{assign a value with the assignment operator := }
+	declare $my_variable := 55
+
+	{initializing constants-- always capitalize them so you can tell the difference}
+	{a constant cannot have its value changed, and it must be set at declaration}
+	declare const $MY_CONST := 60
+
+	{polyphonic variables-- pressing "on note" will create a unique poly and then you can retreive it in "on release"}
+	{they're only really useable in on note and on release}
+	declare polyphonic $my_poly := 55
+
+	{initializing an array. use % and assign the number of values inside of []}
+	{you can't change the number of values in an array after it's been assigned}
+	declare %my_array[4]
+	
+	{assigning a value to the indexes of the new array}
+	%my_array[0] := 72
+	%my_array[1] := 60
+	%my_array[2] := 55
+	%my_array[3] := 6
+
+	{message(%my_array[2])}
+
+	{we can also assign values of an array when it is initialized, like this:}
+	declare %another_array[4] := (10, 55, 60, 87)
+
+	{if you leave them blank, then the last number will be assigned to all the rest)
+	{the final three indexes will be assigned a value of 55}
+	declare %third_array[4] := (10, 55)
+
+	{initializing a string using @}
+	{you cannot assign a value to a string at the same time you initialize it... unfortunately...}
+	declare @my_string
+
+	{text for a string has to be inside quotation marks}
+	{we can also concatinate strings together using &}
+	@my_string := "Hello World"  & " " & "Here I am"
+
+	declare @another_string
+
+	@another_string := " "
+
+	{string arrays-- like an int array but it stores strings. declare using !}
+	{like with strings, can't assign values at declaration}
+	declare !my_string_array[5]
+	declare $i
+
+	!my_string_array[0] := "Hello"
+	!my_string_array[1] := "World"
+	!my_string_array[2] := "Here"
+	!my_string_array[3] := "I"
+	!my_string_array[4] := "Am"
+
+	{KSP doesn't store booleans, so just use 0 or 1 for true/false}
+	{KSP doesn't store floats - if you ever want to use a number with a decimal, like 10.5, you just multiply it by something like 1000 and then later divide by that same number-- so you can use scale to workaround}
+
+end on
+
+on note
+	{$my_variable := $my_variable + 1}
+	{message($my_variable)}
+
+	{this will always show 56 because every time we hit a key, the poly gets re-initialized}
+	{often useful for things like arpeggiators, where you want to hit a key and arpeggiate the note, and then hit a second key and arpeggiate that one without the two interfering with each other}
+	{$my_poly := $my_poly + 1}
+	{message($my_poly)}
+
+	{message(%my_array[2])}
+
+	{concatinating variables}
+	{message(@my_string & @another_string & @my_string)}
+
+	{increment i to change the index being used in the message}
+	{message(!my_string_array[$i])}
+	{$i := $i + 1}
+	
+end on
+
+on release
+	{message($MY_CONST)}
+end on
