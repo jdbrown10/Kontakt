@@ -2,7 +2,7 @@
 
 {+, -, <, >, =, *, / are all self explanatory}
 
-{mod is the modular operator -> performs division and return the remainder}
+{"mod" is the modular operator -> performs division and return the remainder}
 {10 mod 3 = 1}
 
 {assignment operator is ":="}
