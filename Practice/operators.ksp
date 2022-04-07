@@ -1,0 +1,14 @@
+{OPERATORS}
+
+{+, -, <, >, =, *, / are all self explanatory}
+
+{mod is the modular operator -> performs division and return the remainder}
+{10 mod 3 = 1}
+
+{assignment operator is ":="}
+
+{bit operators are also a thing-- very rarely used}
+
+{# is the "is not" operator}
+
+{can't compare string variables -> "string" = "string" is not allowed}
