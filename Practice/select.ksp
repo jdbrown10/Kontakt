@@ -1,0 +1,23 @@
+on init
+    message( "" )
+end on
+
+{ note callback, executed whenever a note on message is received }
+on note
+
+    { $EVENT_NOTE is a built in kontakt variable- it corresponds to the note selected on the keyboard. So if you pressed middle C, $EVENT_NOTE would be equal to 60. C0 would be 24. it uses the midi note numbers. }
+    {kontakt is going to look at this select code block, and if the event_note is equal to 60, then it will do whatever is inside the path for 60. If it's not 60, it will go down to 72. And if it's not 72, it will go down to 74. And if it isn't any of them, it won't do anything. etc}
+    select($EVENT_NOTE)
+        case 60
+            message("Note is 60") {C4}
+        {we can also use a range of values}
+        case 62 to 66
+            message("Note is 62-66")
+        case 72
+            message("Note is 72") {C5}
+        case 74
+            message("Note is 74") {D5}
+
+    end select()
+
+end on

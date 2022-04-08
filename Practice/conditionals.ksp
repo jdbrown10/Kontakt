@@ -1,0 +1,15 @@
+on init
+    
+    { clear out what's being messaged on init }
+    message("")
+
+    declare $my_variable := 1
+
+    {if/else syntax}
+    if ($my_variable + 1 = 2)
+        message("TRUE")
+    else
+        message("FALSE")
+    end if
+
+end on
