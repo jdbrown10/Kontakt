@@ -1,0 +1,50 @@
+on init
+
+    message( "" )
+
+    {initialize a new array}
+    declare %my_array[10] := (1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+
+    {initialize the sentry}
+    declare $i
+
+end on
+
+{ note callback, executed whenever a note on message is received }
+on note
+    {set the sentry's value to 0}
+    $i := 0
+
+
+    {while loop code block start}
+    {num_elements() returns the number of elements in an array-> it's like array.length in js}
+    while($i < num_elements(%my_array) )
+
+        {we can nest functions inside of each other-> this is a select inside of a while loop}
+        select( %my_array[%i] )
+            case 0 to 2
+                message("0 to 2")
+            case 3 to 4
+                message("3 to 4")
+            case 5 to num_elements(%my_array)
+                if (%my_array[$i] = 5)
+                    message("This is 5!")
+                else
+                    message(%my_array[$i])
+                end if
+        end select
+
+
+
+        message(%my_array[$i])
+
+        {built in method, takes a value of a microsecond}
+        {if we don't use this, kontakt will loop through everything and only display the final result}
+        {you also can't use the wait method inside of the init callback}
+        wait(100000)
+
+        {increment i-- this syntax is for doing something like i++ or i += 1 in js}
+        inc($i)
+    end while
+    {while loop code block end}
+end on
