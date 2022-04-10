@@ -1,0 +1,35 @@
+{ you can build your own functions (user functions) or you can use Kontakt's built-in functions }
+
+
+on init
+
+    declare $i
+
+    declare $note_id
+    $note_id := play_note()
+
+    {this just plays a note and returns the note ID}
+    play_note()
+
+end on
+
+
+
+on note
+    {built-in function that increments a variable by 1 and returns its value}
+    {so each time you hit a key, the value will increase by 1}
+    inc($i)
+    message($i)
+end on
+
+
+
+on release
+    {your code here}
+end on
+
+{creating a function looks like this--}
+{inc is a built-in function so I don't think we can actually create one with this same name?}
+function inc(variable)
+    variable := variable + 1
+end function
