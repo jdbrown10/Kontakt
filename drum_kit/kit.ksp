@@ -1,0 +1,102 @@
+on init
+	
+	make_perfview {displays script tab in the UI- perfview is short for performance view}
+	set_ui_height_px(250) {set the height of the UI in pixels}
+	
+	{disable kontakt release trigger handling}
+	SET_CONDITION(NO_SYS_SCRIPT_RLS_TRIG)
+
+	{* Arrays *}
+	declare %dynamic_1[3] := (0, 1, 2)
+	declare %dynamic_2[3] := (3, 4, 5)
+	declare !note_names[128] {this is a string array so we can't populate it in the declaration}
+	declare !notes[12]
+		!notes[0] := "C"
+		!notes[1] := "C#"
+		!notes[2] := "D"
+		!notes[3] := "D#"
+		!notes[4] := "E"
+		!notes[5] := "F"
+		!notes[6] := "F#"
+		!notes[7] := "G"
+		!notes[8] := "G#"
+		!notes[9] := "A"
+		!notes[10] := "A#"
+		!notes[11] := "B"
+
+
+	{* Constants *}
+	declare const $NUM_REPS := 3 {this allows us to easily change the number of round robins later in in case we want to}
+	declare const $RELEASE_GROUP := 6 {again, we use a constant for this because if it changes later, we'll only have to change it in one place}
+	declare const $OPENHH_KEY := 54
+	declare const $CLOSEHH_KEY := 56
+
+	{* Variables *}
+	declare $rr_rep := 0
+	declare $release_id
+	declare $openhh_id
+	declare $i := 0
+
+	{Populate !note_names string array with all the note names of the keyboard}
+	while ($i < num_elements(!note_names))
+	
+		!note_names[$i] := !notes[$i mod 12] & $i / 12 - 2 {concat pitch name with octave number to get C-2, C#-2, etc.....} {the lowest note on the kontakt keyboard is C-2 so we need the -2 there}
+		inc($i) {increment i}
+	end while
+
+	message("") {always clear out messages at the end of the on init callback}
+
+end on
+
+on note
+	{resets release trigger counter}
+	reset_rls_trig_counter($EVENT_NOTE)
+
+	{allow/disallow_group can only be used in on note and on release callbacks. 
+	it's a built in constant}
+	disallow_group($ALL_GROUPS)
+
+	{this just returns the velocity of whatever key was pressed}
+	if ($EVENT_VELOCITY < 65)
+		allow_group(%dynamic_1[$rr_rep])
+	else
+		allow_group(%dynamic_2[$rr_rep])
+	end if
+
+	{this code block is to simulate the real life situation where if you play an open hi hat, it cuts off before you can play another open hi hat}
+	if ($EVENT_NOTE = $OPENHH_KEY) {if the open hi hat is played}
+		
+		ignore_event($EVENT_ID) {this tells kontakt: don't play the note, we're gonna handle it manually}
+		fade_out($openhh_id, 100000, 1) {fade out previous hi-hat note}
+		$openhh_id := play_note($EVENT_NOTE, $EVENT_VELOCITY, 0, -1) {play the open hi-hat and save the note's ID in $openhh_id}
+
+	end if
+
+	if ($EVENT_NOTE = $CLOSEHH_KEY) {this will make the closed hi hat stop the open hi hat sound}
+		fade_out($openhh_id, 100000, 1)
+	end if
+
+	{this creates the round robin cycle- mod 3 will always return the 
+	remainder, so it'll be 1, then 2, then 3, and then go back to 1... etc}
+	$rr_rep := ($rr_rep + 1) mod $NUM_REPS
+
+	{message($EVENT_NOTE)} {a quick way to find a key ID!}
+
+	message(!note_names[$EVENT_NOTE] & " : " & $EVENT_NOTE) {message the name of the key and the note number that has been pressed}
+
+end on
+
+on release
+
+	disallow_group($ALL_GROUPS)
+	allow_group($RELEASE_GROUP)
+
+	fade_out($release_id, 100000, 1) {this command fades out a note. takes 3 parameters the ID of the note to fade, the time in microseconds to fade, and a boolean value. the boolean will kill the voice is you put in 1, and it will keep it active in case you want to fade it back in if you put 0}
+	{the second time fade_out is called, it will have the value from the first release_id because release_id is stored after}
+
+	$release_id := play_note($EVENT_NOTE, $EVENT_VELOCITY, 0, 0) { this play_note returns a unique ID every time a note is played. function requires the note, 
+	its velocity, its offset (we're using 0 here), and a special value (0 as the fourth value mean to keep playing the sample after the key is release, -1 would mean to stop it)}
+
+	{the reason we fade release notes out is because we don't want them to build up in case the user plays a ton of notes in quick succession.}
+	
+end on
